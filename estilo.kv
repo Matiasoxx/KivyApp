@@ -14,6 +14,8 @@ ScreenManager:
         name: 'proximamente'
     RegisterScreen2:
         name: 'register2'
+    proximamenteIngresoPatenteScreen
+        name: 'proximamentePatente'
 
 <DefaultScreen>:
     FloatLayout:
@@ -62,7 +64,7 @@ ScreenManager:
             text: "[color=#FFFFFF][u]Ingresar con Patente[/u][/color]"
             pos_hint: {'center_x': .5, 'center_y': .2}
             markup: True
-            on_release: root.manager.current = 'proximamente'
+            on_release: root.manager.current = 'proximamentePatente'
             text_color: 1, 1, 1, 1  # Blanco
             md_bg_color: 1, 0, 1, 0
             size_hint: None, None
@@ -117,7 +119,7 @@ ScreenManager:
             MDFlatButton:
                 text: "[color=#FFFFFF][u]Olvide mi contraseña[/u][/color]"
                 pos_hint: {'center_x': .5}
-                on_release: root.manager.current = 'proximamente'
+                on_release: root.manager.current = 'proximamentePatente'
                 text_color: app.theme_cls.primary_color
             MDFlatButton:
                 text: "[color=#FFFFFF][u]Volver[/u][/color]"
@@ -322,7 +324,9 @@ ScreenManager:
         padding: dp(48)
         spacing: dp(10)
 
-
+        MDLabel:
+            text: "Aún nos encontramos trabajando en esta funcionalidad..."
+            font_style: 'H5'
         MDRaisedButton:
             text: 'Volver'
             size_hint: None, None
@@ -332,7 +336,23 @@ ScreenManager:
             text_color: 1, 0, 0, 1
             on_release: app.volver_menu()
 
+<proximamenteIngresoPatenteScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(48)
+        spacing: dp(10)
 
+        MDLabel:
+            text: "Aún nos encontramos trabajando en esta funcionalidad..."
+            font_style: 'H5'
+        MDRaisedButton:
+            text: 'Volver'
+            size_hint: None, None
+            size: dp(200), dp(48)
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            md_bg_color: app.theme_cls.primary_light
+            text_color: 1, 0, 0, 1
+            on_release: app.volver_inicio()
 
 
 <MenuScreen>:

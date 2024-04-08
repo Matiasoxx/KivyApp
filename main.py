@@ -19,7 +19,8 @@ from kivy.uix.gridlayout import GridLayout
 from kivymd.uix.button import MDFlatButton
 from kivy.clock import Clock
 from kivy.properties import StringProperty
-
+from kivy.network.urlrequest import UrlRequest
+import json
 
 import requests
 
@@ -120,6 +121,8 @@ class RecuperarContrasenaScreen(Screen):
     pass
 class AdminLoginScreen(Screen):
     pass
+class proximamenteIngresoPatenteScreen(Screen):
+    pass
 class EstacionamientoApp(MDApp):
     admin_actu = None
     usuario_actu = None
@@ -137,7 +140,7 @@ class EstacionamientoApp(MDApp):
         self.sm.add_widget(AdminLoginScreen(name='admin_login'))
         self.sm.add_widget(proximamenteScreen(name='proximamente'))
         self.sm.add_widget(RegisterScreen2(name='register2'))
-        self.sm.add_widget(RecuperarContrasenaScreen(name='recuperar_contrasena'))
+        self.sm.add_widget(proximamenteIngresoPatenteScreen(name='proximamentePatente'))
 
         return self.sm
     def cambiar_pantalla(self, nombre_pantalla):
