@@ -19,6 +19,8 @@ from kivy.uix.gridlayout import GridLayout
 from kivymd.uix.button import MDFlatButton
 from kivy.clock import Clock
 from kivy.properties import StringProperty
+
+
 import requests
 
 from estacionamiento_basedatos import AccesoBaseDatos
@@ -114,7 +116,8 @@ class MenuScreen(Screen):
         except ValueError:
             self.mostrar_popup("Error", "Introduce un número válido.")
 
-
+class RecuperarContrasenaScreen(Screen):
+    pass
 class AdminLoginScreen(Screen):
     pass
 class EstacionamientoApp(MDApp):
@@ -134,6 +137,7 @@ class EstacionamientoApp(MDApp):
         self.sm.add_widget(AdminLoginScreen(name='admin_login'))
         self.sm.add_widget(proximamenteScreen(name='proximamente'))
         self.sm.add_widget(RegisterScreen2(name='register2'))
+        self.sm.add_widget(RecuperarContrasenaScreen(name='recuperar_contrasena'))
 
         return self.sm
     def cambiar_pantalla(self, nombre_pantalla):
@@ -166,16 +170,17 @@ class EstacionamientoApp(MDApp):
         apellido = self.root.get_screen('menu').ids.apellido_usuario.text
         email = self.root.get_screen('menu').ids.email_usuario.text
         self.db.editar_usuario(self.usuario_actu, nombre, apellido, email)
-        self.mostrar_popupLocal("Actualizacion Exitosa","Hemos actualizado tú información con los datos que nos entregaste, cuando vuelvas a iniciar sesion recuerda ingresar con tus nuevas credenciales")
+        self.mostrar_popupLocal("Actualizacion Exitosa","Hemos actualizado tú información con los datos que nos entregaste.")
 
     def iniciar_sesion_admin(self, credentials, email, password):
         
         admin_actu = self.db.iniciar_sesion_administrador(credentials,email,password)
         if admin_actu:
             self.admin_actu = admin_actu
-            self.mostrar_popupLocal("Bienvenido Administrado","Es un gusto volver a verlo Administrador. Que tenga un gran día")
+            self.mostrar_popupLocal("Bienvenido Administrado",
+                                    "Es un gusto volver a verlo Administrador. Que tenga un gran día")
         else:
-            print("Credenciales inválidas para iniciar sesión como administrador")
+            self.mostrar_popupLocal("Credenciales Invalidas","Credenciales invalidas. Intentalo otra vez")
     def cerrar_sesion_usuario(self):
         self.usuario_actu = None
         self.mostrar_popupLocal("Sesión Cerrada","Se ha cerrado sesión.")
@@ -199,7 +204,7 @@ class EstacionamientoApp(MDApp):
         else:
             print("El email ya está registrado")
     def registrar_usuario(self):
-        # Obtiene los textos de los campos de contraseña
+
         contrasena = self.root.get_screen('register').ids.password_field.text
         confirmar_contrasena = self.root.get_screen('register').ids.Confirm_password_field.text
         correo_electronico = self.root.get_screen('register').ids.email_field.text
@@ -239,6 +244,8 @@ class EstacionamientoApp(MDApp):
 
         else:
             self.root.current = 'register'
+
+
     def ingreso_patente(self):
         print("Ingresa patente")
         pass
@@ -269,7 +276,7 @@ class EstacionamientoApp(MDApp):
 
     def actualizar_tarifa(self, *args):
         # Supongamos que esta función genera o recupera una nueva tarifa
-        nueva_tarifa = "Tarifa Actual: 2"  # Aquí implementarías la lógica para obtener la nueva tarifa
+        nueva_tarifa = "Tarifa Actual: 2"  # Aquí tendriamos que implementar la logica para cuando el usuario estacione en un espacio
         self.root.get_screen('menu').tarifa_actualizada = nueva_tarifa
 
     def on_start(self):

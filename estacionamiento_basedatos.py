@@ -216,22 +216,22 @@ class AccesoBaseDatos:
         self.conn.commit()
         print(f"El administrador {nombre_completo} se registró correctamente.")
 
-    def iniciar_sesion_administrador(self, id_credenciales, email, contraseña):
+    def iniciar_sesion_administrador(self, credenciales, email, contraseña):
         # Hashear la contraseña para compararla con la almacenada en la base de datos
         contraseña_hasheada = hashlib.sha256(contraseña.encode()).hexdigest()
 
         # Buscar al administrador en la base de datos
         self.cursor.execute('''
             SELECT nombre_completo FROM administradores 
-            WHERE id_credenciales = ? AND email = ? AND contraseña = ?
-        ''', (id_credenciales, email, contraseña_hasheada))
+            WHERE email = ? AND contraseña = ? AND id_credenciales = ?
+        ''', (email, contraseña_hasheada, credenciales))
         administrador = self.cursor.fetchone()
 
         if administrador:
             nombre_completo = administrador[0]
             return f"Bienvenido, administrador {nombre_completo}. Sesión iniciada como administrador."
         else:
-            return "Credenciales incorrectas para el administrador."
+            return print("error")
     def obtener_id_admin(self, email):
         self.cursor.execute("SELECT id FROM admininistradores WHERE email = ?;", (email))
         return self.cursor.fetchone()
@@ -287,7 +287,7 @@ class AccesoBaseDatos:
 
 # Aqui para los ejemplos
 db = AccesoBaseDatos()
-#db.crear_usuario("Matias","Saa",20001211,"e","1234","HJKU22","Toyota","R-26")
+#db.crear_usuario("Matias","Saa",20001211,"e@gmail.com","1234","HJKU20","Toyota","R-26")
 db.iniciar_sesion("e","1234")
 id_credenciales = 1
 nombre_completo = "Nombre Apellido"
@@ -297,14 +297,14 @@ contraseña = "contraseña_segura"
 usuario_id = None
 
 # Llamar al método para registrar un nuevo administrador
-#db.registrar_administrador(id_credenciales, nombre_completo, email, fecha_nacimiento, contraseña, usuario_id)
+db.registrar_administrador(id_credenciales, nombre_completo, email, fecha_nacimiento, contraseña, usuario_id)
 #id_credenciales = 1  # Asegúrate de que este ID coincida con el de un administrador existente
 #email = "admin@example.com"
 #contraseña = "contraseña_segura"
 
 # Llamar al método para iniciar sesión como administrador
-#mensaje = db.iniciar_sesion_administrador(id_credenciales, email, contraseña)
-#print(mensaje)
+mensaje = db.iniciar_sesion_administrador(id_credenciales, email, contraseña)
+print(mensaje)
 
 print(db.obtener_estacionamientos())
 #Estacionamientos creados
@@ -315,4 +315,5 @@ db.crear_estacionamiento("A4",False, True)
 db.crear_estacionamiento("A5",False, True)
 db.crear_estacionamiento("A6",False, True)
 db.crear_estacionamiento("A7",False, True)"""
+
 
