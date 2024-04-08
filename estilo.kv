@@ -1,0 +1,449 @@
+ScreenManager:
+    id: screen_manager
+    DefaultScreen:
+        name: 'default'
+    LoginScreen:
+        name: 'login'
+    RegisterScreen:
+        name: 'register'
+    MenuScreen:
+        name: 'menu'
+    AdminLoginScreen:
+        name: 'admin_login'
+    proximamenteScreen:
+        name: 'proximamente'
+    RegisterScreen2:
+        name: 'register2'
+
+<DefaultScreen>:
+    FloatLayout:
+        Image:
+            source: "descargar-_2_.jpg"
+            keep_ratio: False
+            allow_stretch: True
+            size_hint: (1, 1)
+            pos_hint: {'center_x': .5, 'center_y': .5}
+
+        MDLabel:
+            text: "Bienvenido a Park Waze"
+            font_style: 'H5'
+            size_hint_x: 1
+            size_hint_y: None
+            size: self.texture_size
+            pos_hint: {'center_x': .5,'center_y': .9}
+            halign: 'center'
+            valign: 'center'
+            theme_text_color: "Custom"
+            text_color: 1, 1, 1, 1
+
+        MDRaisedButton:
+            text: "Iniciar Sesión"
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            on_release: root.manager.current = 'login'
+            md_bg_color: app.theme_cls.primary_color
+            size_hint: None, None
+            size: "200dp", "48dp"
+
+        MDRaisedButton:
+            text: "Registrarse"
+            pos_hint: {'center_x': .5, 'center_y': .4}
+            on_release: app.registrarse()
+            md_bg_color: app.theme_cls.primary_color
+            size_hint: None, None
+            size: "200dp", "48dp"
+        MDRaisedButton:
+            text: "Iniciar Sesión como Admin"
+            pos_hint: {'center_x': .5, 'center_y': .3}
+            on_release: root.manager.current = 'admin_login'
+            md_bg_color: app.theme_cls.primary_color
+            size_hint: None, None
+            size: "200dp", "48dp"
+        MDFlatButton:
+            text: "[color=#FFFFFF][u]Ingresar con Patente[/u][/color]"
+            pos_hint: {'center_x': .5, 'center_y': .2}
+            markup: True
+            on_release: app.ingreso_patente()
+            text_color: 1, 1, 1, 1  # Blanco
+            md_bg_color: 1, 0, 1, 0
+            size_hint: None, None
+            size: "200dp", "48dp"
+
+<LoginScreen>:
+    RelativeLayout:
+        Image:
+            source: "d4.jpg"
+            keep_ratio: False
+            allow_stretch: True
+            size_hint: 1, 1
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: 10
+            padding: 48
+            size_hint: 0.6, None
+            height: self.minimum_height
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+            MDLabel:
+                text: "Iniciar Sesión"
+                font_style: 'H5'
+                halign: 'center'
+
+            MDTextField:
+                id: email_field
+                hint_text: "Email"
+                size_hint_x: None
+                width: "200dp"
+                pos_hint: {'center_x': .5}
+                current_hint_text_color: app.theme_cls.primary_color
+
+            MDTextField:
+                id: password_field
+                hint_text: "Contraseña"
+                size_hint_x: None
+                width: "200dp"
+                pos_hint: {'center_x': .5}
+                current_hint_text_color: app.theme_cls.primary_color
+                password: True
+
+            MDRaisedButton:
+                text: "Ingresar"
+                pos_hint: {'center_x': .5}
+                size_hint_x: None
+                width: "200dp"
+                on_release: app.iniciar_sesion(email_field.text, password_field.text)
+                md_bg_color: app.theme_cls.primary_color
+            MDFlatButton:
+                text: "[color=#FFFFFF][u]Olvide mi contraseña[/u][/color]"
+                pos_hint: {'center_x': .5}
+                on_release: root.manager.current = 'register'
+                text_color: app.theme_cls.primary_color
+            MDFlatButton:
+                text: "[color=#FFFFFF][u]Volver[/u][/color]"
+                pos_hint: {'center_x': .5}
+                on_release: app.volver_inicio()
+                text_color: app.theme_cls.primary_color
+            MDFlatButton:
+                text: "[color=#FFFFFF][u]Registrate ahora[/u][/color]"
+                pos_hint: {'center_x': .5}
+                on_release: root.manager.current = 'register'
+                text_color: app.theme_cls.primary_color
+
+<RegisterScreen>:
+    RelativeLayout:
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: 10
+            padding: 48
+            size_hint: 0.6, None
+            height: self.minimum_height
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+            MDLabel:
+                text: "Registro"
+                font_style: 'H5'
+                halign: 'center'
+
+            MDTextField:
+                id: email_field
+                hint_text: "Email"
+                size_hint_x: None
+                width: "200dp"
+                pos_hint: {'center_x': .5}
+                current_hint_text_color: app.theme_cls.primary_color
+
+            MDTextField:
+                id: email_confirm_field
+                hint_text: "Confirma Email"
+                size_hint_x: None
+                width: "200dp"
+                pos_hint: {'center_x': .5}
+                current_hint_text_color: app.theme_cls.primary_color
+
+            MDTextField:
+                id: Name_field
+                hint_text: "Nombre"
+                size_hint_x: None
+                width: "200dp"
+                pos_hint: {'center_x': .5}
+                current_hint_text_color: app.theme_cls.primary_color
+
+            MDTextField:
+                id: Last_name_field
+                hint_text: "Apellido"
+                size_hint_x: None
+                width: "200dp"
+                pos_hint: {'center_x': .5}
+                current_hint_text_color: app.theme_cls.primary_color
+
+
+            MDTextField:
+                id: password_field
+                hint_text: "Contraseña"
+                size_hint_x: None
+                width: "200dp"
+                pos_hint: {'center_x': .5}
+                current_hint_text_color: app.theme_cls.primary_color
+                password: True
+
+            MDTextField:
+                id: Confirm_password_field
+                hint_text: "Confirma Contraseña"
+                size_hint_x: None
+                width: "200dp"
+                pos_hint: {'center_x': .5}
+                current_hint_text_color: app.theme_cls.primary_color
+                password: True
+
+            MDRaisedButton:
+                text: "Siguiente"
+                pos_hint: {'center_x': .5}
+                size_hint_x: None
+                width: "200dp"
+                #on_release: app.registrar_usuario()
+                on_release: root.manager.current = 'register2'
+                md_bg_color: app.theme_cls.primary_color
+
+            MDFlatButton:
+                text: "Volver"
+                pos_hint: {'center_x': .5}
+                on_release: app.volver_inicio()
+                text_color: app.theme_cls.primary_color
+<RegisterScreen2>:
+    RelativeLayout:
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: 10
+            padding: 48
+            size_hint: 0.6, None
+            height: self.minimum_height
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+
+            MDLabel:
+                text: "Ya casi..."
+                font_style: 'H5'
+                halign: 'center'
+
+            MDTextField:
+                id: Patente_field
+                hint_text: "Patente"
+                size_hint_x: None
+                width: "200dp"
+                pos_hint: {'center_x': .5}
+                current_hint_text_color: app.theme_cls.primary_color
+
+            MDTextField:
+                id: Marca_field
+                hint_text: "Marca del vehiculo"
+                size_hint_x: None
+                width: "200dp"
+                pos_hint: {'center_x': .5}
+                current_hint_text_color: app.theme_cls.primary_color
+
+            MDTextField:
+                id: Modelo_field
+                hint_text: "Modelo de automovil"
+                size_hint_x: None
+                width: "200dp"
+                pos_hint: {'center_x': .5}
+                current_hint_text_color: app.theme_cls.primary_color
+
+            MDTextField:
+                id: Ageofuser
+                hint_text: "Año de nacimiento [formato xxxx]"
+                size_hint_x: None
+                width: "200dp"
+                pos_hint: {'center_x': .5}
+                current_hint_text_color: app.theme_cls.primary_color
+
+            MDRaisedButton:
+                text: "Registrar"
+                pos_hint: {'center_x': .5}
+                size_hint_x: None
+                width: "200dp"
+                on_release: app.registrar_usuario()
+                md_bg_color: app.theme_cls.primary_color
+
+            MDFlatButton:
+                text: "Volver"
+                pos_hint: {'center_x': .5}
+                on_release: root.manager.current = 'register'
+                text_color: app.theme_cls.primary_color
+
+
+<AdminLoginScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(48)
+
+        MDLabel:
+            text: "Inicio de Sesión de Administrador"
+            halign: 'center'
+            font_style: 'H5'
+
+        MDTextField:
+            id: credentials_field
+            hint_text: "Credenciales"
+            size_hint_x: None
+            width: "200dp"
+            pos_hint: {'center_x': .5}
+
+        MDTextField:
+            id: email_field
+            hint_text: "Email"
+            size_hint_x: None
+            width: "200dp"
+            pos_hint: {'center_x': .5}
+
+        MDTextField:
+            id: password_field
+            hint_text: "Contraseña"
+            size_hint_x: None
+            width: "200dp"
+            pos_hint: {'center_x': .5}
+            password: True
+
+        MDRaisedButton:
+            text: "Ingresar"
+            size_hint: None, None
+            width: "200dp"
+            pos_hint: {'center_x': .5}
+            on_release: app.iniciar_sesion_admin(credentials_field.text, email_field.text, password_field.text)
+
+        MDFlatButton:
+            text: "Volver"
+            pos_hint: {'center_x': .5}
+            on_release: app.volver_inicio()
+            text_color: app.theme_cls.primary_color
+<proximamenteScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: dp(48)
+        spacing: dp(10)
+
+
+        MDRaisedButton:
+            text: 'Volver'
+            size_hint: None, None
+            size: dp(200), dp(48)
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            md_bg_color: app.theme_cls.primary_light
+            text_color: 1, 0, 0, 1
+            on_release: app.volver_menu()
+
+
+
+
+<MenuScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: "10dp"
+        MDBottomNavigation:
+            MDBottomNavigationItem:
+                name: 'home_screen'
+                text: 'Inicio'
+                icon: 'home'
+                # Aquí ya se me ocurrira algo
+                ScrollView:
+                    FloatLayout:  # Usar FloatLayout para posicionar libremente los widgets
+                        MDLabel:
+                            text: root.tarifa_actualizada  # Enlaza la propiedad tarifa_actualizada
+                            size_hint: None, None
+                            size: self.texture_size
+                            pos_hint: {'right': 1, 'top': 1}
+                            halign: 'right'
+                            width: 300
+                        GridLayout:
+                            id: container
+                            cols: 1
+                            adaptive_height: True
+
+
+
+            MDBottomNavigationItem:
+                name: 'profile_screen'
+                text: 'Perfil'
+                icon: 'account-circle'
+                ScrollView:
+                    FloatLayout:  # Usar FloatLayout para posicionar libremente los widgets
+                        MDLabel:
+                            text: root.tarifa_actualizada  # Enlaza la propiedad tarifa_actualizada
+                            size_hint: None, None
+                            size: self.texture_size
+                            pos_hint: {'right': 1, 'top': 1}
+                            halign: 'right'
+                            width: 300
+                        BoxLayout:
+                            orientation: 'vertical'
+                            size_hint_y: None
+                            height: self.minimum_height
+                            padding: "10dp"
+                            spacing: "10dp"
+
+                            MDTextField:
+                                id: nombre_usuario
+                                hint_text: "Nombre"
+                                icon_right: "account"
+                                size_hint_x: None
+                                width: 300
+                                pos_hint: {'center_x': 0.5}
+
+                            MDTextField:
+                                id: apellido_usuario
+                                hint_text: "Apellido"
+                                icon_right: "account-outline"
+                                size_hint_x: None
+                                width: 300
+                                pos_hint: {'center_x': 0.5}
+                            MDTextField:
+                                id: email_usuario
+                                hint_text: "Email"
+                                icon_right: "email-edit-outline"
+                                size_hint_x: None
+                                width: 300
+                                pos_hint: {'center_x': 0.5}
+
+                            MDRaisedButton:
+                                text: "Guardar Cambios"
+                                pos_hint: {'center_x': 0.5}
+                                on_release: app.guardar_cambios()
+            MDBottomNavigationItem:
+                name:'config_tab'
+                text:'Configuracion'
+                icon: 'cog-outline'
+                FloatLayout:  # Usar FloatLayout para posicionar libremente los widgets
+                    MDLabel:
+                        text: root.tarifa_actualizada  # Enlaza la propiedad tarifa_actualizada
+                        size_hint: None, None
+                        size: self.texture_size
+                        pos_hint: {'right': 1, 'top': 1}
+                        halign: 'right'
+                        width: 300
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size: root.width, root.height
+                        spacing: dp(10)  # space between buttons
+
+                        Button:
+                            text: 'Acerca de Nosotros'
+                            size_hint_y: None
+                            height: dp(48)
+                            on_release: root.manager.current = 'proximamente'
+
+                        Button:
+                            text: 'Permisos de Aplicación'
+                            size_hint_y: None
+                            height: dp(48)
+                            on_release: root.manager.current = 'proximamente'
+
+                        Button:
+                            text: 'Eliminar usuario'
+                            size_hint_y: None
+                            height: dp(48)
+                            on_release: app.eliminar_usuario()
+                        Button:
+                            text: 'Cerrar Sesión'
+                            size_hint_y: None
+                            height: dp(48)
+                            on_release: app.cerrar_sesion_usuario()
