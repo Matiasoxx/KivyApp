@@ -62,7 +62,7 @@ ScreenManager:
             text: "[color=#FFFFFF][u]Ingresar con Patente[/u][/color]"
             pos_hint: {'center_x': .5, 'center_y': .2}
             markup: True
-            on_release: app.ingreso_patente()
+            on_release: root.manager.current = 'proximamente'
             text_color: 1, 1, 1, 1  # Blanco
             md_bg_color: 1, 0, 1, 0
             size_hint: None, None
@@ -117,7 +117,7 @@ ScreenManager:
             MDFlatButton:
                 text: "[color=#FFFFFF][u]Olvide mi contraseña[/u][/color]"
                 pos_hint: {'center_x': .5}
-                on_release: root.manager.current = 'register'
+                on_release: root.manager.current = 'proximamente'
                 text_color: app.theme_cls.primary_color
             MDFlatButton:
                 text: "[color=#FFFFFF][u]Volver[/u][/color]"
@@ -447,3 +447,4 @@ ScreenManager:
                             size_hint_y: None
                             height: dp(48)
                             on_release: app.cerrar_sesion_usuario()
+
