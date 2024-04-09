@@ -21,14 +21,35 @@ from kivy.clock import Clock
 from kivy.properties import StringProperty
 import re
 from datetime import datetime
-from kivy.network.urlrequest import UrlRequest
-import json
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 import requests
 
 from estacionamiento_basedatos import AccesoBaseDatos
 
+def enviar_correo(destinatario, asunto, mensaje):
+    servidor_smtp = "smtp.office365.com"
+    puerto_smtp = 587  # Usar 587 para TLS
+    usuario_smtp = "parkwaze@outlook.com"
+    contraseña_smtp = "Hola1234."
 
+    # Crear un objeto MIMEMultipart para el mensaje
+    correo = MIMEMultipart()
+    correo["From"] = usuario_smtp
+    correo["To"] = destinatario
+    correo["Subject"] = asunto
+
+    # Adjuntar el cuerpo del mensaje
+    cuerpo_mensaje = MIMEText(mensaje, "plain")
+    correo.attach(cuerpo_mensaje)
+
+    # Conectar al servidor SMTP y enviar el correo
+    with smtplib.SMTP(host=servidor_smtp, port=puerto_smtp) as servidor:
+        servidor.starttls()  # Iniciar el modo de conexión TLS (Transport Layer Security)
+        servidor.login(usuario_smtp, contraseña_smtp)
+        servidor.send_message(correo)
 class DefaultScreen(Screen):
     pass
 
@@ -430,6 +451,8 @@ class EstacionamientoApp(MDApp):
             if resultado_creacion == "usuario_creado":
                 # Usuario creado exitosamente
                 self.mostrar_popup("Operación Exitosa", "Usuario creado exitosamente.")
+                enviar_correo(correo_electronico, f"{nombre} Bienvenido a Park Waze",
+                              f"Gracias {nombre} por unirte\nTu cuenta ha sido creada con exito, ya puedes disfrutar todos nuestros servicios\nAtte Servicio al cliente ParkWaze Chile")
                 self.root.get_screen('register').ids.password_field.text = ''
                 self.root.get_screen('register').ids.Confirm_password_field.text = ''
                 self.root.get_screen('register').ids.email_field.text = ''
@@ -440,7 +463,7 @@ class EstacionamientoApp(MDApp):
                 self.root.get_screen('register2').ids.Patente_field.text = ''
                 self.root.get_screen('register2').ids.Marca_field.text = ''
                 self.root.get_screen('register2').ids.Modelo_field.text = ''
-                self.iniciar_sesion(correo_electronico, contrasena)  # O cualquier lógica posterior
+                self.iniciar_sesion(correo_electronico, contrasena)
                 self.cargardatos()
             elif resultado_creacion == "correo_existente":
                 # Correo electrónico ya está en uso
@@ -458,6 +481,8 @@ class EstacionamientoApp(MDApp):
         else:
             self.root.current = 'register'
 
+
+        
     def ingreso_patente(self):
         print("Ingresa patente")
         pass
