@@ -19,7 +19,10 @@ from kivy.uix.gridlayout import GridLayout
 from kivymd.uix.button import MDFlatButton
 from kivy.clock import Clock
 from kivy.properties import StringProperty
-
+import re
+from datetime import datetime
+from kivy.network.urlrequest import UrlRequest
+import json
 
 import requests
 
@@ -199,9 +202,28 @@ class EstacionamientoApp(MDApp):
         nombre = self.root.get_screen('menu').ids.nombre_usuario.text
         apellido = self.root.get_screen('menu').ids.apellido_usuario.text
         email = self.root.get_screen('menu').ids.email_usuario.text
-        self.db.editar_usuario(self.usuario_actu, nombre, apellido, email)
-        self.mostrar_popupLocal("Actualizacion Exitosa",
-                                "Hemos actualizado tú información con los datos que nos entregaste.")
+        color_normal = self.theme_cls.primary_color
+        hay_error = False
+        mensaje_error = ""
+        if "@" not in email or "." not in email:
+            # Actualiza el color del texto a rojo si no coincide
+            self.mostrar_popup("Correo Electrónico Incorrecto",
+                               "El correo electrónico es incorrecto, \nel formato debe ser Correo@algo.dominio.")
+            self.root.get_screen('menu').ids.email_usuario.line_color_normal = self.theme_cls.error_color
+            hay_error = True
+        else:
+            self.root.get_screen('menu').ids.email_usuario.line_color_normal = color_normal
+
+            # Procede solo si no hay errores
+        if not hay_error:
+            self.db.editar_usuario(self.usuario_actu, nombre, apellido, email)
+            self.mostrar_popup("Actualización Exitosa",
+                               "Hemos actualizado tu información con los datos que nos entregaste.")
+        else:
+            # Opcionalmente, podrías querer hacer algo aquí si hay un error
+            self.mostrar_popup("Error en la actualización",
+                               f"Se encontraron errores en los siguientes campos:\n{mensaje_error}")
+            pass
 
     def iniciar_sesion_admin(self, credentials, email, password):
         admin_actu = self.db.iniciar_sesion_administrador(credentials, email, password)
@@ -237,25 +259,53 @@ class EstacionamientoApp(MDApp):
         else:
             print("El email ya está registrado")
 
+    def mostrar_popup(self, titulo, mensaje):
+        # Crea el contenido de la ventana emergente
+        contenido = BoxLayout(orientation='vertical', padding=10, spacing=10)
+        contenido.add_widget(Label(text=mensaje))
+        boton_cerrar = Button(text="Cerrar", size_hint_y=None, height=dp(48))
+        contenido.add_widget(boton_cerrar)
+
+        # Crea la ventana emergente
+        popup = Popup(title=titulo, content=contenido, size_hint=(None, None), size=(400, 200))
+
+        # Cierra la ventana emergente al hacer clic en el botón de cerrar
+        boton_cerrar.bind(on_release=popup.dismiss)
+
+        # Muestra la ventana emergente
+        popup.open()
+
     def registrar_usuario(self):
+
+        # Obtiene los textos de los campos de contraseña
         contrasena = self.root.get_screen('register').ids.password_field.text
         confirmar_contrasena = self.root.get_screen('register').ids.Confirm_password_field.text
         correo_electronico = self.root.get_screen('register').ids.email_field.text
         confirmar_correo_electronico = self.root.get_screen('register').ids.email_confirm_field.text
+        nombre = self.root.get_screen('register').ids.Name_field.text
+        apellido = self.root.get_screen('register').ids.Last_name_field.text
+        fecha = self.root.get_screen('register').ids.Ageofuser.text
+        patente = self.root.get_screen('register2').ids.Patente_field.text.upper()
+        marca = self.root.get_screen('register2').ids.Marca_field.text
+        modelo = self.root.get_screen('register2').ids.Modelo_field.text
         color_normal = self.theme_cls.primary_color
+
         hay_error = False
 
         # Verifica si las contraseñas coinciden
         if contrasena != confirmar_contrasena:
             # Actualiza el color del texto a rojo si no coinciden
+            self.mostrar_popup("Contraseña incorrecta", "Las contraseñas no coinciden.")
             self.root.get_screen('register').ids.password_field.line_color_normal = self.theme_cls.error_color
             self.root.get_screen('register').ids.Confirm_password_field.line_color_normal = self.theme_cls.error_color
+            hay_error = True
         else:
             self.root.get_screen('register').ids.password_field.line_color_normal = color_normal
             self.root.get_screen('register').ids.Confirm_password_field.line_color_normal = color_normal
 
         if correo_electronico != confirmar_correo_electronico:
             # Actualiza el color del texto a rojo si no coinciden
+            self.mostrar_popup("Correo Electronico incorrecto", "Los correos no coinciden.")
             self.root.get_screen('register').ids.email_field.line_color_normal = self.theme_cls.error_color
             self.root.get_screen('register').ids.email_confirm_field.line_color_normal = self.theme_cls.error_color
             hay_error = True
@@ -263,16 +313,127 @@ class EstacionamientoApp(MDApp):
             self.root.get_screen('register').ids.email_field.line_color_normal = color_normal
             self.root.get_screen('register').ids.email_confirm_field.line_color_normal = color_normal
 
+        if not correo_electronico or not confirmar_correo_electronico:
+            # Actualiza el color del texto a rojo si no coinciden
+            self.mostrar_popup("Correo Electronico incorrecto", "Este campo no puede estar vacio.")
+            self.root.get_screen('register').ids.email_field.line_color_normal = self.theme_cls.error_color
+            self.root.get_screen('register').ids.email_confirm_field.line_color_normal = self.theme_cls.error_color
+            hay_error = True
+        else:
+            self.root.get_screen('register').ids.email_field.line_color_normal = color_normal
+            self.root.get_screen('register').ids.email_confirm_field.line_color_normal = color_normal
+
+        if not contrasena or not confirmar_contrasena:
+            # Actualiza el color del texto a rojo si no coinciden
+            self.mostrar_popup("Contraseña incorrecta", "Este campo no puede estar vacio.")
+            self.root.get_screen('register').ids.password_field.line_color_normal = self.theme_cls.error_color
+            self.root.get_screen('register').ids.Confirm_password_field.line_color_normal = self.theme_cls.error_color
+            hay_error = True
+        else:
+            self.root.get_screen('register').ids.password_field.line_color_normal = color_normal
+            self.root.get_screen('register').ids.Confirm_password_field.line_color_normal = color_normal
+
+        if len(contrasena) < 8 or not any(char.isupper() for char in contrasena) or not any(
+                char.isdigit() for char in contrasena) or not re.search("[!@#$%^&*()_+=\[{\]};:<>|./?,-]", contrasena):
+            self.mostrar_popup("Contraseña incorrecta",
+                               "La contraseña debe tener al menos\n8 caracteres, una mayuscula\n un numero y un caracter especial.")
+            self.root.get_screen('register').ids.password_field.line_color_normal = self.theme_cls.error_color
+            self.root.get_screen('register').ids.Confirm_password_field.line_color_normal = self.theme_cls.error_color
+            hay_error = True
+        else:
+            self.root.get_screen('register').ids.password_field.line_color_normal = color_normal
+            self.root.get_screen('register').ids.Confirm_password_field.line_color_normal = color_normal
+
+        if "@" not in correo_electronico  or "." not in correo_electronico:
+            # Actualiza el color del texto a rojo si no coinciden
+            self.mostrar_popup("Correo Electronico incorrecto",
+                               "El Correo electronico es incorrecto, \nel formato debe ser Correo@algo.dominio")
+            self.root.get_screen('register').ids.email_field.line_color_normal = self.theme_cls.error_color
+            self.root.get_screen('register').ids.email_confirm_field.line_color_normal = self.theme_cls.error_color
+            hay_error = True
+        else:
+            self.root.get_screen('register').ids.email_field.line_color_normal = color_normal
+            self.root.get_screen('register').ids.email_confirm_field.line_color_normal = color_normal
+
+        if not nombre:
+            # Actualiza el color del texto a rojo si no coinciden
+            self.mostrar_popup("Nombre incorrecto", "Este campo no puede estar vacio.")
+            self.root.get_screen('register').ids.Name_field.line_color_normal = self.theme_cls.error_color
+            hay_error = True
+        else:
+            self.root.get_screen('register').ids.Name_field.line_color_normal = color_normal
+
+        if not apellido:
+            # Actualiza el color del texto a rojo si no coinciden
+            self.mostrar_popup("Apellido incorrecto", "Este campo no puede estar vacio.")
+            self.root.get_screen('register').ids.Last_name_field.line_color_normal = self.theme_cls.error_color
+            hay_error = True
+        else:
+            self.root.get_screen('register').ids.Last_name_field.line_color_normal = color_normal
+
+        if not patente:
+            # Actualiza el color del texto a rojo si no coinciden
+            self.mostrar_popup("Patente incorrecto", "Este campo no puede estar vacio.")
+            self.root.get_screen('register2').ids.Patente_field.line_color_normal = self.theme_cls.error_color
+            hay_error = True
+        else:
+            self.root.get_screen('register2').ids.Patente_field.line_color_normal = color_normal
+
+        if not re.match("^[A-Za-z]{4}\d{2}$", patente):
+            self.mostrar_popup("Patente incorrecto", "Este campo no puede estar vacio.")
+            self.root.get_screen('register2').ids.Patente_field.line_color_normal = self.theme_cls.error_color
+            hay_error = True
+        else:
+            self.root.get_screen('register2').ids.Patente_field.line_color_normal = color_normal
+
+        if not marca:
+            # Actualiza el color del texto a rojo si no coinciden
+            self.mostrar_popup("Marca incorrecta", "Este campo no puede estar vacio.")
+            self.root.get_screen('register2').ids.Marca_field.line_color_normal = self.theme_cls.error_color
+            hay_error = True
+        else:
+            self.root.get_screen('register2').ids.Marca_field.line_color_normal = color_normal
+
+        if not modelo:
+            # Actualiza el color del texto a rojo si no coinciden
+            self.mostrar_popup("Modelo incorrecto",
+                               "La patente debe tener exactamente\n6 caracteres, empezar con cuatro \nletras y luego dos números.\n(ej: ABCD23)")
+            self.root.get_screen('register2').ids.Modelo_field.line_color_normal = self.theme_cls.error_color
+            hay_error = True
+        else:
+            self.root.get_screen('register2').ids.Modelo_field.line_color_normal = color_normal
+
+        self.root.get_screen('register').ids.Ageofuser.line_color_normal = color_normal
+        if not re.match(r"^\d{8}$", fecha):
+            self.mostrar_popup("Fecha incorrecto", "La fecha debe ser en formato\nAAAAMMDD")
+            self.root.get_screen('register').ids.Ageofuser.line_color_normal = self.theme_cls.error_color
+            hay_error = True
+        else:
+            año = int(fecha[:4])
+            mes = int(fecha[4:6])
+            día = int(fecha[6:8])
+            # Verificar si la fecha es válida en el calendario
+            try:
+                datetime.strptime(fecha, '%Y%m%d')
+            except ValueError:
+                self.mostrar_popup("Fecha incorrecto", "La fecha debe Existir")
+                self.root.get_screen('register').ids.Ageofuser.line_color_normal = self.theme_cls.error_color
+                hay_error = True
+            if año > 2024:
+                self.mostrar_popup("Fecha incorrecto", "La fecha debe Existir")
+                self.root.get_screen('register').ids.Ageofuser.line_color_normal = self.theme_cls.error_color
+                hay_error = True
+
         if not hay_error:
-            nombre = self.root.get_screen('register').ids.Name_field.text
-            apellido = self.root.get_screen('register').ids.Last_name_field.text
-            Edad = self.root.get_screen('register2').ids.Ageofuser.text
-            patente = self.root.get_screen('register2').ids.Patente_field.text
-            marca = self.root.get_screen('register2').ids.Marca_field.text
-            modelo = self.root.get_screen('register2').ids.Modelo_field.text
-            self.db.crear_usuario(nombre, apellido, 20201212, correo_electronico, contrasena, patente, marca, modelo)
-            self.iniciar_sesion(correo_electronico, contrasena)
+            self.mostrar_popup("Operación Exitosa", "Usuario creado exitosamente.")
+            creado = self.db.crear_usuario(nombre, apellido, fecha, correo_electronico, contrasena, patente, marca, modelo)
+            if creado:
+                self.iniciar_sesion(correo_electronico,contrasena)
+                self.cargardatos()
+            else:
+                self.mostrar_popup("Error", "No se pudo crear el usuario.")
             pass
+
         else:
             self.root.current = 'register'
 

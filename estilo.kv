@@ -198,6 +198,15 @@ ScreenManager:
                 current_hint_text_color: app.theme_cls.primary_color
                 password: True
 
+            MDTextField:
+                id: Ageofuser
+                hint_text: "Fecha de nacimiento [formato AAAAMMDD]"
+                size_hint_x: None
+                width: "200dp"
+                pos_hint: {'center_x': .5}
+                current_hint_text_color: app.theme_cls.primary_color
+
+
             MDRaisedButton:
                 text: "Siguiente"
                 pos_hint: {'center_x': .5}
@@ -251,13 +260,6 @@ ScreenManager:
                 pos_hint: {'center_x': .5}
                 current_hint_text_color: app.theme_cls.primary_color
 
-            MDTextField:
-                id: Ageofuser
-                hint_text: "Año de nacimiento [formato xxxx]"
-                size_hint_x: None
-                width: "200dp"
-                pos_hint: {'center_x': .5}
-                current_hint_text_color: app.theme_cls.primary_color
 
             MDRaisedButton:
                 text: "Registrar"
@@ -367,6 +369,21 @@ ScreenManager:
                 # Aquí ya se me ocurrira algo
                 ScrollView:
                     FloatLayout:  # Usar FloatLayout para posicionar libremente los widgets
+                        GridLayout:
+                            id: container
+                            cols: 1
+                            adaptive_height: True
+            MDBottomNavigationItem:
+                id: tarifa_item
+                name: 'tarifa_screen'
+                text: 'Tarifa'
+                icon: 'cash'
+                ScrollView:
+                    FloatLayout:
+                        MDLabel:
+                            text: 'Tarifa a pagar'
+                            font_style: 'H5'
+                            halign: 'center'
                         MDLabel:
                             text: root.tarifa_actualizada  # Enlaza la propiedad tarifa_actualizada
                             size_hint: None, None
@@ -374,72 +391,55 @@ ScreenManager:
                             pos_hint: {'right': 1, 'top': 1}
                             halign: 'right'
                             width: 300
-                        GridLayout:
-                            id: container
-                            cols: 1
-                            adaptive_height: True
-
-
 
             MDBottomNavigationItem:
                 name: 'profile_screen'
                 text: 'Perfil'
                 icon: 'account-circle'
                 ScrollView:
-                    FloatLayout:  # Usar FloatLayout para posicionar libremente los widgets
+                    BoxLayout:
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        padding: "10dp"
+                        spacing: "10dp"
                         MDLabel:
-                            text: root.tarifa_actualizada  # Enlaza la propiedad tarifa_actualizada
-                            size_hint: None, None
-                            size: self.texture_size
-                            pos_hint: {'right': 1, 'top': 1}
-                            halign: 'right'
+                            text: 'Editar usuario'
+                            font_style: 'H5'
+                            halign: 'center'
+                        MDTextField:
+                            id: nombre_usuario
+                            hint_text: "Nombre"
+                            icon_right: "account"
+                            size_hint_x: None
                             width: 300
-                        BoxLayout:
-                            orientation: 'vertical'
-                            size_hint_y: None
-                            height: self.minimum_height
-                            padding: "10dp"
-                            spacing: "10dp"
+                            pos_hint: {'center_x': 0.5}
 
-                            MDTextField:
-                                id: nombre_usuario
-                                hint_text: "Nombre"
-                                icon_right: "account"
-                                size_hint_x: None
-                                width: 300
-                                pos_hint: {'center_x': 0.5}
+                        MDTextField:
+                            id: apellido_usuario
+                            hint_text: "Apellido"
+                            icon_right: "account-outline"
+                            size_hint_x: None
+                            width: 300
+                            pos_hint: {'center_x': 0.5}
+                        MDTextField:
+                            id: email_usuario
+                            hint_text: "Email"
+                            icon_right: "email-edit-outline"
+                            size_hint_x: None
+                            width: 300
+                            pos_hint: {'center_x': 0.5}
 
-                            MDTextField:
-                                id: apellido_usuario
-                                hint_text: "Apellido"
-                                icon_right: "account-outline"
-                                size_hint_x: None
-                                width: 300
-                                pos_hint: {'center_x': 0.5}
-                            MDTextField:
-                                id: email_usuario
-                                hint_text: "Email"
-                                icon_right: "email-edit-outline"
-                                size_hint_x: None
-                                width: 300
-                                pos_hint: {'center_x': 0.5}
+                        MDRaisedButton:
+                            text: "Guardar Cambios"
+                            pos_hint: {'center_x': 0.5}
+                            on_release: app.guardar_cambios()
 
-                            MDRaisedButton:
-                                text: "Guardar Cambios"
-                                pos_hint: {'center_x': 0.5}
-                                on_release: app.guardar_cambios()
             MDBottomNavigationItem:
                 name:'config_tab'
                 text:'Configuracion'
                 icon: 'cog-outline'
                 FloatLayout:  # Usar FloatLayout para posicionar libremente los widgets
-                    MDLabel:
-                        text: root.tarifa_actualizada  # Enlaza la propiedad tarifa_actualizada
-                        size_hint: None, None
-                        size: self.texture_size
-                        pos_hint: {'right': 1, 'top': 1}
-                        halign: 'right'
-                        width: 300
                     BoxLayout:
                         orientation: 'vertical'
                         size: root.width, root.height

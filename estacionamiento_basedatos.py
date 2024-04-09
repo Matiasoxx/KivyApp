@@ -116,7 +116,7 @@ class AccesoBaseDatos:
     # Función para crear un nuevo usuario con su vehículo
     def crear_usuario(self,nombre, apellido, fecha_nacimiento, email, contraseña, patente, marca, modelo):
         self.cursor.execute('''
-            SELECT email FROM usuario WHERE email = ?
+            SELECT email FROM usuarios WHERE email = ?
             ''', (email,))
         if self.cursor.fetchone():
             print("El correo electrónico ya está siendo usado.")
@@ -179,7 +179,7 @@ class AccesoBaseDatos:
     # Funcion editar usuario
     def editar_usuario(self, id_usuario, nuevo_nombre, nuevo_apellido, nuevo_email):
         self.cursor.execute("""
-        UPDATE usuarios SET nombre = ?, apellido = ?, email = ?, 
+        UPDATE usuarios SET nombre = ?, apellido = ?, email = ?
         WHERE id = ?;""", (nuevo_nombre, nuevo_apellido, nuevo_email, id_usuario))
         self.conn.commit()
 
