@@ -19,15 +19,16 @@ from kivy.uix.gridlayout import GridLayout
 from kivymd.uix.button import MDFlatButton
 from kivy.clock import Clock
 from kivy.properties import StringProperty
-from kivy.network.urlrequest import UrlRequest
-import json
+
 
 import requests
 
 from estacionamiento_basedatos import AccesoBaseDatos
 
+
 class DefaultScreen(Screen):
     pass
+
 
 class LoginScreen(Screen):
     pass
@@ -36,12 +37,19 @@ class LoginScreen(Screen):
 class RegisterScreen(Screen):
     def registrarse(self):
         print("Llegué aquí")
+
+
 class RegisterScreen2(Screen):
     pass
+
+
 class proximamenteScreen(Screen):
     pass
+
+
 class MenuScreen(Screen):
     tarifa_actualizada = StringProperty("Tarifa Actual: 0")
+
     def __init__(self, **kwargs):
         super(MenuScreen, self).__init__(**kwargs)
         self.popup = None  # Atributo para almacenar la instancia del Popup
@@ -63,7 +71,8 @@ class MenuScreen(Screen):
             boton = MDFlatButton(
                 text=f"{estacionamiento[0]}\nSolicitado por : {estacionamiento[2]} usuarios",
                 size_hint_y=None, height=dp(100),
-                md_bg_color=[1, 1, 0, 1] if estacionamiento[0] in self.estacionamientos_solicitados else [0, 1, 0, 1] if estacionamiento[1] else [1, 0, 0, 1]
+                md_bg_color=[1, 1, 0, 1] if estacionamiento[0] in self.estacionamientos_solicitados else [0, 1, 0, 1] if
+                estacionamiento[1] else [1, 0, 0, 1]
             )
             boton.bind(on_release=partial(self.solicitar_estacionamiento, estacionamiento[0]))
 
@@ -84,7 +93,6 @@ class MenuScreen(Screen):
         instance.md_bg_color = [1, 1, 0, 1]
         self.mostrar_popup_recordatorio(direccion)
         self.mostrar_estacionamientos()
-        
 
     def mostrar_popup(self, titulo, mensaje):
         popup_layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
@@ -101,9 +109,11 @@ class MenuScreen(Screen):
 
     def mostrar_popup_recordatorio(self, direccion):
         content = BoxLayout(orientation='vertical')
-        label = Label(text=f'Has solicitado el estacionamiento {direccion}. En cuántos minutos quieres ser recordado sobre esta solicitud?')
+        label = Label(
+            text=f'Has solicitado el estacionamiento {direccion}. En cuántos minutos quieres ser recordado sobre esta solicitud?')
         time_input = MDTextField(input_filter='int', hint_text="Minutos")
-        button = Button(text="Confirmar", on_release=lambda x: self.configurar_y_cerrar_recordatorio(time_input.text, direccion))
+        button = Button(text="Confirmar",
+                        on_release=lambda x: self.configurar_y_cerrar_recordatorio(time_input.text, direccion))
         content.add_widget(label)
         content.add_widget(time_input)
         content.add_widget(button)
@@ -118,24 +128,33 @@ class MenuScreen(Screen):
         self.configurar_recordatorio(tiempo, direccion)
         self.cerrar_popup_recordatorio(None)
 
-    def configurar_recordatorio(self, tiempo,direccion):
+    def configurar_recordatorio(self, tiempo, direccion):
         try:
             tiempo_en_minutos = int(tiempo)
             Clock.schedule_once(
-                lambda dt: self.mostrar_popup("Recordatorio", f"Te recordamos que solicitaste el estacionamiento \n{direccion} y aún está disponible."),
+                lambda dt: self.mostrar_popup("Recordatorio",
+                                              f"Te recordamos que solicitaste el estacionamiento \n{direccion} y aún está disponible."),
                 tiempo_en_minutos * 60)
         except ValueError:
             self.mostrar_popup("Error", "Introduce un número válido.")
 
+
 class RecuperarContrasenaScreen(Screen):
     pass
+
+
 class AdminLoginScreen(Screen):
     pass
+
+
 class proximamenteIngresoPatenteScreen(Screen):
     pass
+
+
 class EstacionamientoApp(MDApp):
     admin_actu = None
     usuario_actu = None
+
     def build(self):
         self.db = AccesoBaseDatos()
         self.sm = ScreenManager()
@@ -157,12 +176,12 @@ class EstacionamientoApp(MDApp):
         self.sm.current = nombre_pantalla
 
     def iniciar_sesion(self, email, password):
-        usuario_id = self.db.iniciar_sesion(email,password)
+        usuario_id = self.db.iniciar_sesion(email, password)
         if usuario_id:
             self.usuario_actu = usuario_id
             self.cambiar_pantalla('menu')
         else:
-            self.mostrar_popupLocal("Credenciales Invalidas","No se ha encontrado su usuario. Intentelo de nuevo.")
+            self.mostrar_popupLocal("Credenciales Invalidas", "No se ha encontrado su usuario. Intentelo de nuevo.")
 
     def registrarse(self):
         self.sm.current = 'register'
@@ -181,19 +200,21 @@ class EstacionamientoApp(MDApp):
         apellido = self.root.get_screen('menu').ids.apellido_usuario.text
         email = self.root.get_screen('menu').ids.email_usuario.text
         self.db.editar_usuario(self.usuario_actu, nombre, apellido, email)
-        self.mostrar_popupLocal("Actualizacion Exitosa","Hemos actualizado tú información con los datos que nos entregaste.")
+        self.mostrar_popupLocal("Actualizacion Exitosa",
+                                "Hemos actualizado tú información con los datos que nos entregaste.")
 
     def iniciar_sesion_admin(self, credentials, email, password):
-        admin_actu = self.db.iniciar_sesion_administrador(credentials,email,password)
+        admin_actu = self.db.iniciar_sesion_administrador(credentials, email, password)
         if admin_actu:
             self.admin_actu = admin_actu
-            self.mostrar_popupLocal("Bienvenido Administrado", "Es un gusto volver a verlo Administrador. Que tenga un gran día")
+            self.mostrar_popupLocal("Bienvenido Administrado",
+                                    "Es un gusto volver a verlo Administrador. Que tenga un gran día")
         else:
-            self.mostrar_popupLocal("Credenciales Invalidas","Credenciales invalidas. Intentalo otra vez")
+            self.mostrar_popupLocal("Credenciales Invalidas", "Credenciales invalidas. Intentalo otra vez")
 
     def cerrar_sesion_usuario(self):
         self.usuario_actu = None
-        self.mostrar_popupLocal("Sesión Cerrada","Se ha cerrado sesión.")
+        self.mostrar_popupLocal("Sesión Cerrada", "Se ha cerrado sesión.")
         self.cambiar_pantalla('default')
 
     def cerrar_sesion_admin(self):
@@ -203,7 +224,8 @@ class EstacionamientoApp(MDApp):
     def eliminar_usuario(self):
         if self.usuario_actu:
             self.db.eliminar_usuario(self.usuario_actu)
-            self.mostrar_popupLocal("Usuario eliminado","Tu cuenta ha sido eliminada exitosamente. Espero hayas disfrutado tú tiempo con nosotros. Hasta luego!")
+            self.mostrar_popupLocal("Usuario eliminado",
+                                    "Tu cuenta ha sido eliminada exitosamente. Espero hayas disfrutado tú tiempo con nosotros. Hasta luego!")
             # Cerrar sesión del usuario después de eliminarlo
             self.cerrar_sesion_usuario()
         else:
@@ -249,7 +271,7 @@ class EstacionamientoApp(MDApp):
             marca = self.root.get_screen('register2').ids.Marca_field.text
             modelo = self.root.get_screen('register2').ids.Modelo_field.text
             self.db.crear_usuario(nombre, apellido, 20201212, correo_electronico, contrasena, patente, marca, modelo)
-            self.iniciar_sesion(correo_electronico,contrasena)
+            self.iniciar_sesion(correo_electronico, contrasena)
             pass
         else:
             self.root.current = 'register'
@@ -292,6 +314,7 @@ class EstacionamientoApp(MDApp):
     def on_start(self):
         # Programa la función actualizar_tarifa para que se ejecute cada 60 segundos (1 minuto)
         Clock.schedule_interval(self.actualizar_tarifa, 60)
+
 
 if __name__ == '__main__':
     EstacionamientoApp().run()
