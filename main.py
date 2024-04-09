@@ -425,14 +425,35 @@ class EstacionamientoApp(MDApp):
                 hay_error = True
 
         if not hay_error:
-            self.mostrar_popup("Operación Exitosa", "Usuario creado exitosamente.")
-            creado = self.db.crear_usuario(nombre, apellido, fecha, correo_electronico, contrasena, patente, marca, modelo)
-            if creado:
-                self.iniciar_sesion(correo_electronico,contrasena)
+            resultado_creacion = self.db.crear_usuario(nombre, apellido, fecha, correo_electronico, contrasena, patente,
+                                                       marca, modelo)
+            if resultado_creacion == "usuario_creado":
+                # Usuario creado exitosamente
+                self.mostrar_popup("Operación Exitosa", "Usuario creado exitosamente.")
+                self.root.get_screen('register').ids.password_field.text = ''
+                self.root.get_screen('register').ids.Confirm_password_field.text = ''
+                self.root.get_screen('register').ids.email_field.text = ''
+                self.root.get_screen('register').ids.email_confirm_field.text = ''
+                self.root.get_screen('register').ids.Name_field.text = ''
+                self.root.get_screen('register').ids.Last_name_field.text = ''
+                self.root.get_screen('register').ids.Ageofuser.text = ''
+                self.root.get_screen('register2').ids.Patente_field.text = ''
+                self.root.get_screen('register2').ids.Marca_field.text = ''
+                self.root.get_screen('register2').ids.Modelo_field.text = ''
+                self.iniciar_sesion(correo_electronico, contrasena)  # O cualquier lógica posterior
                 self.cargardatos()
+            elif resultado_creacion == "correo_existente":
+                # Correo electrónico ya está en uso
+                self.mostrar_popup("Error", "El correo electrónico ya está siendo utilizado.")
+                self.root.get_screen('register').ids.email_field.line_color_normal = self.theme_cls.error_color
+                self.root.get_screen('register').ids.email_confirm_field.line_color_normal = self.theme_cls.error_color
+            elif resultado_creacion == "patente_existente":
+                # Patente ya está en uso
+                self.mostrar_popup("Error", "La patente ya está siendo utilizada.")
+                self.root.get_screen('register2').ids.Patente_field.line_color_normal = self.theme_cls.error_color
             else:
-                self.mostrar_popup("Error", "No se pudo crear el usuario.")
-            pass
+                # Otro tipo de error no manejado
+                self.mostrar_popup("Error", "No se pudo crear el usuario por un error desconocido.")
 
         else:
             self.root.current = 'register'

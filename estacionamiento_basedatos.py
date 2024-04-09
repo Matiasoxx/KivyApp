@@ -114,37 +114,39 @@ class AccesoBaseDatos:
             return None
 
     # Función para crear un nuevo usuario con su vehículo
-    def crear_usuario(self,nombre, apellido, fecha_nacimiento, email, contraseña, patente, marca, modelo):
-        self.cursor.execute('''
-            SELECT email FROM usuarios WHERE email = ?
-            ''', (email,))
-        if self.cursor.fetchone():
-            print("El correo electrónico ya está siendo usado.")
-            return False
+    def crear_usuario(self, nombre, apellido, fecha_nacimiento, email, contraseña, patente, marca, modelo):
+        # Verifica si el correo electrónico ya está en uso
+        if self.verificar_existenciacorreo(email):
+            return "correo_existente"
+
+        # Verifica si la patente ya está en uso
+        if self.verificar_existenciapatente(patente):
+            return "patente_existente"
 
         # Hashear la contraseña antes de almacenarla en la base de datos
         contraseña_hasheada = hashlib.sha256(contraseña.encode()).hexdigest()
 
         # Insertar el nuevo usuario en la tabla de usuarios
-
         self.cursor.execute('''
             INSERT INTO usuarios (nombre, apellido, fecha_nacimiento, email, contraseña)
             VALUES (?, ?, ?, ?, ?)
         ''', (nombre, apellido, fecha_nacimiento, email, contraseña_hasheada))
-
-        # Obtener el ID del usuario recién creado
-        usuario_id = self.cursor.lastrowid
+        usuario_id = self.cursor.lastrowid  # Obtener el ID del usuario recién creado
 
         # Insertar el vehículo asociado al nuevo usuario en la tabla de vehículos
         self.cursor.execute('''
             INSERT INTO vehiculos (usuario_id, marca, modelo, patente)
             VALUES (?, ?, ?, ?)
         ''', (usuario_id, marca, modelo, patente))
-
         self.conn.commit()
-        print("Usuario y vehículo creados exitosamente")
-        return True
 
+        return "usuario_creado"
+    def verificar_existenciacorreo(self, email):
+        self.cursor.execute('SELECT id FROM usuarios WHERE email = ?', (email,))
+        return self.cursor.fetchone() is not None
+    def verificar_existenciapatente(self, patente):
+        self.cursor.execute('SELECT id FROM vehiculos WHERE patente = ?', (patente,))
+        return self.cursor.fetchone() is not None
     # Función para solicitar un estacionamiento
     def solicitar_estacionamiento(self,usuario_id):
         # Solicitar la patente del vehículo
